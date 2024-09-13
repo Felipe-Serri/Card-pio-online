@@ -113,11 +113,115 @@ cardapio.metodos = {
                     MEU_CARRINHO.push(item[0])
                 }
 
+                cardapio.metodos.mensagem('Item adicionado ao carrinho', 'green')
                 $("#qntd-" + id).text(0)
+
+                cardapio.metodos.atualizarBadgeTotal();
             }
         }
     },
+    
+    // atualizar o badge de totais dos botôes "Meu carrinho"
+    atualizarBadgeTotal: () => {
+        var total = 0;
 
+        $.each(MEU_CARRINHO, (i,e) =>{
+            total += e.qntd
+        })
+
+        if (total > 0){
+            $(".botao-carrinho").removeClass('hidden');
+            $(".container-total-carrinho").removeClass('hidden');
+        }
+        else{
+            $(".botao-carrinho").addClass('hidden');
+            $(".container-total-carrinho").addClass('hidden');           
+        }
+
+        $(".badge-total-carrinho").html(total);
+    },
+
+    abrirCarrinho:(abrir) => {
+
+        if(abrir){
+            $("#modalCarrinho").removeClass('hidden');
+            cardapio.metodos.carregarEtapa(1);
+        }
+        else{
+            $("#modalCarrinho").addClass('hidden');
+        }
+    },
+    // altera os texto e exibe os botões das etapas 
+    carregarEtapa: (etapa) => {
+        if (etapa == 1){
+            $("#lblTituloEtapa").text('Seu carrinho:');
+            $("#itensCarrinho").removeClass('hidden');
+            $("#localEntrega").addClass('hidden');
+            $("#resumoCarrinho").addClass('hidden');
+
+            $(".etapa").removeClass('active');
+            $(".etapa1").addClass('active');
+
+            $("#btnEtapaPedido").removeClass('hidden');
+            $("#btnEtapaEndereco").addClass('hidden');
+            $("#btnEtapaResumo").addClass('hidden');
+            $("#btnVoltar").addClass('hidden');
+        }
+        if (etapa == 2){
+            $("#lblTituloEtapa").text('Endereço de entrega:');
+            $("#itensCarrinho").addClass('hidden');
+            $("#localEntrega").removeClass('hidden');
+            $("#resumoCarrinho").addClass('hidden');
+
+            $(".etapa").removeClass('active');
+            $(".etapa1").addClass('active');
+            $(".etapa2").addClass('active');
+
+            $("#btnEtapaPedido").addClass('hidden');
+            $("#btnEtapaEndereco").removeClass('hidden');
+            $("#btnEtapaResumo").addClass('hidden');
+            $("#btnVoltar").removeClass('hidden');
+        }
+        if (etapa == 3){
+            $("#lblTituloEtapa").text('Resumo do pedido:');
+            $("#itensCarrinho").addClass('hidden');
+            $("#localEntrega").addClass('hidden');
+            $("#resumoCarrinho").removeClass('hidden');
+
+            $(".etapa").removeClass('active');
+            $(".etapa1").addClass('active');
+            $(".etapa2").addClass('active');
+            $(".etapa3").addClass('active');
+
+            $("#btnEtapaPedido").addClass('hidden');
+            $("#btnEtapaEndereco").addClass('hidden');
+            $("#btnEtapaResumo").removeClass('hidden');
+            $("#btnVoltar").removeClass('hidden');
+        }
+        },
+
+        // botão de voltar etapa
+        voltarEtapa: () => {
+
+            let etapa = $(".etapa.active").length;
+            cardapio.metodos.carregarEtapa(etapa - 1);
+        },
+
+    mensagem: (texto, cor = 'red', tempo = 3500)=> {
+
+        let id = Math.floor(Date.now() * Math.random()).toString();
+        let msg = `<div id="msg-${id}" class="animated fadeInDown toast ${cor}">${texto}</div>`;
+
+        $("#container-mensagens").append(msg);
+
+        setTimeout(() => {
+            $("#msg-" + id).removeClass('fadeInDown');
+            $("#msg-" + id).addClass('fadeOutUp');
+            setTimeout(()=>{
+                $("#msg-" + id).remove();
+            }, 800);           
+        }, tempo)
+    }
 
 }
 
